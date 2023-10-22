@@ -11,6 +11,9 @@
 #include<stdbool.h>
 #include"Functions.c"
 #include"BMP.h"
+#include<unistd.h>
+#include<sys/wait.h>
+
 
 void setUp(void) {
     // This function will be called before each test case
@@ -20,6 +23,14 @@ void setUp(void) {
 void tearDown(void) {
     // This function will be called after each test case
     // You can use it for any test-specific cleanup
+}
+
+void test_outOfBounds(){
+    File file = openFile("sample_640x426.bmp");
+    //write in fd 0 in order to give input to the sscanf
+    // write(0, "0 0 0 0 0 0 0 \n", 14); 
+    file.image = FillArea(file.image);
+    freeImage(file.image);
 }
 
 void test_readImage(){
@@ -65,9 +76,25 @@ int main(void){
     UNITY_BEGIN();
 
     RUN_TEST(test_readImage);
+    //fork the next line of code
+    pid_t pid = fork();
+    if(pid == 0){
+        //write in fd 0 in order to give input to the sscanf
+        //is pid 0 parent of chold
+        //pid 0 is child
+        test_outOfBounds();
+    }else{
+        usleep(500000);
+        write(1, "0 0 \n\0", 6);
+        usleep(100000);
+        write(1, "0 0 \n\0", 6);
+        usleep(100000);
+        write(1, "0 0 0 \n\0", 9);
+        wait(NULL);
+    }
     RUN_TEST(test_freeImage);
     RUN_TEST(test_printInfo);
-    RUN_TEST(test_FillArea);
+    // RUN_TEST(test_FillArea);
     RUN_TEST(test_openFile);
     RUN_TEST(test_writeImage);
 

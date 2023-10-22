@@ -149,3 +149,5 @@ void writeImage(File file, char* filename){
     }
     fclose(fp);
 }
+
+
