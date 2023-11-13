@@ -70,18 +70,26 @@ void test_writeImage(){
 }
 
 void RUN_TEST_(void (*test)(void)){
+    Unity.NumberOfTests++;
     double time = clock();
     printf("Running test:\n");
     int pid = fork();
     if(pid == 0){
+        Unity.TestFailures = 0;
         RUN_TEST(test);
-        exit(0);
+        if(Unity.TestFailures != 0){
+            printf("test falures %ld\n", Unity.TestFailures);
+            exit(2);
+        }else{
+            exit(0);
+        }
     }
     else{
         int status;
         waitpid(pid, &status, 0);
         if(status != 0){
             printf("Test failed.\n");
+            Unity.TestFailures++;
         }
     }
     printf("Time taken: %f\n\n", (clock() - time) / (double)CLOCKS_PER_SEC * 1000);
