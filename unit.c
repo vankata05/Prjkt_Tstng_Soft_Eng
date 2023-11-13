@@ -78,7 +78,6 @@ void RUN_TEST_(void (*test)(void)){
         Unity.TestFailures = 0;
         RUN_TEST(test);
         if(Unity.TestFailures != 0){
-            printf("test falures %ld\n", Unity.TestFailures);
             exit(2);
         }else{
             exit(0);
@@ -99,6 +98,8 @@ int main(void){
 
     signal(SIGSEGV, segfault_handler);
 
+    double time = clock();
+
     UNITY_BEGIN();
 
     RUN_TEST_(test_readImage);
@@ -108,6 +109,8 @@ int main(void){
     RUN_TEST_(test_writeImage);
 
     UNITY_END();
+
+    printf("Total time taken: %f\n", (clock() - time) / (double)CLOCKS_PER_SEC * 1000);
 
     return 0;
 }
