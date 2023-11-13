@@ -87,7 +87,10 @@ void RUN_TEST_(void (*test)(void)){
         int status;
         waitpid(pid, &status, 0);
         if(status != 0){
-            printf("Test failed.\n");
+            if(status == 2)
+                printf("Test failed.\n");
+            else
+                printf("Test failed with segmentation fault.\n");
             Unity.TestFailures++;
         }
     }
@@ -105,6 +108,7 @@ int main(void){
     RUN_TEST_(test_readImage);
     RUN_TEST_(test_freeImage);
     RUN_TEST_(test_printInfo);
+    RUN_TEST_(test_FillArea);
     RUN_TEST_(test_openFile);
     RUN_TEST_(test_writeImage);
 
